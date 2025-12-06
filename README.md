@@ -8,6 +8,8 @@ so I built this little module that handles:
 - Async batching for large forests
 - Optional growth → decay → regrow cycle using TweenService
 
+- This is for my HiddenDevs application.
+
 ## Folder layout
 
 - `src/ReplicatedStorage/TreeGeneration`
