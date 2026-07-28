@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: JohnnyMorganz/stylua-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: v2.5.2
+          args: --check src examples
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build tools
+        run: |
+          cargo install rojo --version 7.7.0 --locked
+          cargo install wally --version 0.3.2 --locked
+      - name: Validate and build package
+        run: |
+          wally manifest-to-json
+          wally package --list
+          rojo build package.project.json --output GenTree.rbxm
+          rojo build demo.project.json --output GenTree-demo.rbxlx

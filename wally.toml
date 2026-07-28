@@ -1,0 +1,13 @@
+[package]
+name = "devkyato/gentree"
+description = "A small procedural tree generator for Roblox."
+version = "0.1.0"
+license = "MIT"
+authors = ["devkyato"]
+realm = "server"
+registry = "https://github.com/UpliftGames/wally-index"
+repository = "https://github.com/devkyato/GenTree"
+include = ["src", "src/**", "default.project.json", "LICENSE"]
+exclude = ["**"]
+
+[dependencies]
