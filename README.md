@@ -87,30 +87,58 @@ local trees = generator:GenerateForest(
 ## How generation works
 
 ```mermaid
-flowchart LR
-    A["GenTree.new(options)"] --> B["Validate and freeze config"]
-    B --> C["Generate(position, parent)"]
-    C --> D["Build tapered trunk"]
-    D --> E["Place spiral branch tiers"]
-    E --> F["Create foliage clusters"]
-    F --> G["Set metadata and parent model"]
-    G --> H["Return complete Model"]
+flowchart TD
+    REQUEST["Generate(position, parent)"] --> CONFIG["Validate and freeze configuration"]
+    CONFIG --> SEED["Create Random from seed"]
+    SEED --> HEIGHT["Choose height between minHeight and maxHeight"]
+    HEIGHT --> TRUNK_LOOP{"More trunk segments?"}
+    TRUNK_LOOP -->|Yes| TRUNK["Move upward, add controlled lean,<br>and create the next cylinder"]
+    TRUNK --> TRUNK_LOOP
+    TRUNK_LOOP -->|No| TIER_LOOP{"More branch tiers?"}
+    TIER_LOOP -->|Yes| ORIGIN["Select a point on the upper 65% of the trunk"]
+    ORIGIN --> SPIRAL["Rotate around the trunk using the golden angle"]
+    SPIRAL --> BRANCH["Choose upward angle and varied branch length"]
+    BRANCH --> LEAVES["Place foliage clusters along the outer half"]
+    LEAVES --> TIER_LOOP
+    TIER_LOOP -->|No| CROWN["Add the crown foliage"]
+    CROWN --> METADATA["Set Seed, Height, and PartCount attributes"]
+    METADATA --> PARENT["Parent and return the complete Model"]
 ```
 
 The package deliberately generates all descendants before parenting the final model.
 Callers never receive a half-built tree, while `yieldEveryParts` can still yield during
 large builds to reduce long frame stalls.
 
-## Package graph
+### Tree anatomy
+
+The result is a bottom-up trunk with branch tiers distributed around it. Each branch
+receives several foliage clusters, and a final cluster closes the canopy at the top.
 
 ```mermaid
 graph TD
-    API["src/init.lua<br>Public API"] --> GENERATOR["Generator.lua<br>Tree and forest generation"]
-    API --> CONFIG["Config.lua<br>Defaults and validation"]
-    GENERATOR --> CONFIG
-    GENERATOR --> GEOMETRY["Geometry.lua<br>Parts and random vectors"]
-    GENERATOR --> TYPES["Types.lua<br>Public Luau types"]
-    CONFIG --> TYPES
+    CROWN["Crown foliage"]
+    T4["Upper trunk segment"]
+    T3["Upper branch tier"]
+    T2["Middle branch tier"]
+    T1["Lower branch tier"]
+    ROOT["Generation position"]
+
+    ROOT --> T1 --> T2 --> T3 --> T4 --> CROWN
+
+    T1 --> B11["Branch"]
+    T1 --> B12["Branch"]
+    B11 --> F11["Leaf clusters"]
+    B12 --> F12["Leaf clusters"]
+
+    T2 --> B21["Branch"]
+    T2 --> B22["Branch"]
+    B21 --> F21["Leaf clusters"]
+    B22 --> F22["Leaf clusters"]
+
+    T3 --> B31["Branch"]
+    T3 --> B32["Branch"]
+    B31 --> F31["Leaf clusters"]
+    B32 --> F32["Leaf clusters"]
 ```
 
 Every generated tree has this Explorer structure:
@@ -124,6 +152,63 @@ GenTree (Model)
 
 Useful model attributes include `GenTree`, `Seed`, `Height`, and `PartCount`. Leaves
 are tagged `GenTreeLeaf` by default for wind or effects systems.
+
+### What the settings control
+
+```mermaid
+graph LR
+    CONFIG["GenTree options"]
+    CONFIG --> TRUNK["Trunk shape"]
+    CONFIG --> CANOPY["Canopy shape"]
+    CONFIG --> LOOK["Appearance"]
+    CONFIG --> RUNTIME["Runtime behavior"]
+
+    TRUNK --> HEIGHTS["minHeight / maxHeight"]
+    TRUNK --> SEGMENTS["trunkSegments / trunkLean"]
+    TRUNK --> TAPER["trunkBaseRadius / trunkTopRadius"]
+
+    CANOPY --> TIERS["branchTiers / branchesPerTier"]
+    CANOPY --> LENGTH["branchLength / branchUpwardAngle"]
+    CANOPY --> DENSITY["leafClustersPerBranch / leavesPerCluster"]
+
+    LOOK --> COLORS["trunkColor / leafColor"]
+    LOOK --> MATERIALS["trunkMaterial / leafMaterial"]
+
+    RUNTIME --> RANDOMNESS["seed"]
+    RUNTIME --> YIELDING["yieldEveryParts"]
+    RUNTIME --> TAGGING["tagLeaves"]
+```
+
+### How forests are distributed
+
+`GenerateForest` samples a disk rather than a square. Taking the square root of the
+random distance prevents trees from bunching up near the center.
+
+```mermaid
+flowchart TD
+    START["GenerateForest(center, count, radius)"] --> RNG["Create deterministic forest RNG"]
+    RNG --> LOOP{"Generated count trees?"}
+    LOOP -->|No| ANGLE["Choose angle from 0 to 2π"]
+    ANGLE --> DISTANCE["distance = sqrt(random) × radius"]
+    DISTANCE --> POSITION["position = center + radial offset"]
+    POSITION --> CHILD_SEED["Derive a unique seed for this tree"]
+    CHILD_SEED --> GENERATE["Run the complete single-tree pipeline"]
+    GENERATE --> COLLECT["Append Model to result array"]
+    COLLECT --> LOOP
+    LOOP -->|Yes| RETURN["Return all completed tree Models"]
+```
+
+```text
+                  tree
+            tree        tree
+       tree       center       tree
+            tree        tree
+       tree                    tree
+             circular radius
+```
+
+With the same configuration and seed, the same forest layout and individual tree
+shapes are produced again. Without a seed, each call receives fresh randomness.
 
 ## Configuration
 
