@@ -9,7 +9,7 @@ type Options = Types.Options
 
 local GenTree = {}
 
-GenTree.Version = "0.1.0"
+GenTree.Version = "0.1.1"
 GenTree.DefaultConfig = Config.defaults()
 
 function GenTree.new(options: Options?): Generator

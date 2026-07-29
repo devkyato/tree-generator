@@ -30,6 +30,7 @@ function Geometry.partBetween(
 	part.CanQuery = true
 	part.CastShadow = true
 
+	-- Roblox cylinders run along X, so I rotate that long axis toward the next point.
 	local midpoint = startPosition:Lerp(endPosition, 0.5)
 	part.CFrame = CFrame.lookAt(midpoint, endPosition) * CFrame.Angles(0, math.pi / 2, 0)
 	part.Parent = parent

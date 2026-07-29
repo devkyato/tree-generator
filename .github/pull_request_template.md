@@ -1,8 +1,12 @@
-## Summary
+## What did you change?
 
-Describe the change and why it is needed.
+Give me the short version first.
 
-## Validation
+## Why this approach?
+
+Explain the part you thought through and any tradeoff I should know about.
+
+## How did you check it?
 
 - [ ] `stylua --check src examples`
 - [ ] `selene src examples`

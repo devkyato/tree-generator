@@ -1,7 +1,7 @@
 [package]
 name = "devkyato/gentree"
-description = "A small procedural tree generator for Roblox."
-version = "0.1.0"
+description = "A small procedural tree generator I made for Roblox."
+version = "0.1.1"
 license = "MIT"
 authors = ["devkyato"]
 realm = "server"

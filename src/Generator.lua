@@ -17,6 +17,7 @@ local Generator = {}
 Generator.__index = Generator
 
 local function getSeed(config: Config): number
+	-- A supplied seed is my repeat button; otherwise each request gets a fresh starting point.
 	if config.seed ~= nil then
 		return config.seed
 	end
@@ -102,6 +103,7 @@ function Generator:Generate(position: Vector3, parent: Instance?): Model
 	local points = table.create(config.trunkSegments + 1)
 	points[1] = position
 
+	-- I build a bottom-up list of trunk points first because the canopy needs stable origins.
 	local segmentHeight = height / config.trunkSegments
 	local partCount = 0
 
@@ -146,6 +148,7 @@ function Generator:Generate(position: Vector3, parent: Instance?): Model
 		local origin = points[pointIndex]
 
 		for branchIndex = 1, config.branchesPerTier do
+			-- The golden angle keeps neighboring branches from lining up into obvious columns.
 			local angle = (tier * 0.65 + branchIndex) * GOLDEN_ANGLE + random:NextNumber(-0.18, 0.18)
 			local upward = math.rad(config.branchUpwardAngle + random:NextNumber(-8, 8))
 			local horizontal = Vector3.new(math.cos(angle), 0, math.sin(angle))
@@ -197,6 +200,7 @@ function Generator:Generate(position: Vector3, parent: Instance?): Model
 	end
 
 	model:SetAttribute("PartCount", partCount)
+	-- Parenting is the last step so callers only ever see a complete tree.
 	model.Parent = parent
 	return model
 end
@@ -216,6 +220,7 @@ function Generator:GenerateForest(
 
 	for index = 1, math.floor(count) do
 		local angle = random:NextNumber(0, math.pi * 2)
+		-- sqrt gives me a uniform disk instead of a clump of trees around the center.
 		local distance = math.sqrt(random:NextNumber()) * radius
 		local offset = Vector3.new(math.cos(angle) * distance, 0, math.sin(angle) * distance)
 		local treeOptions = table.clone(self.Config) :: any

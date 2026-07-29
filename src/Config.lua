@@ -7,6 +7,7 @@ type Options = Types.Options
 
 local Config = {}
 
+-- I keep every visual decision here so the generation code can stay focused on shape.
 local DEFAULTS: Config = {
 	seed = nil,
 	minHeight = 22,
@@ -72,6 +73,7 @@ function Config.resolve(options: Options?): Config
 	local resolved = table.clone(DEFAULTS)
 	local mutable = resolved :: any
 
+	-- Failing early made tuning much nicer than discovering a typo inside a half-built tree.
 	if options then
 		for key, value in options do
 			assert(VALID_KEYS[key], `Unknown GenTree option "{key}"`)

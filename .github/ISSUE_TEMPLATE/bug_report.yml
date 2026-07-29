@@ -1,5 +1,5 @@
 name: Bug report
-description: Report reproducible GenTree behavior.
+description: Tell me about GenTree behavior you can reproduce.
 title: "[Bug]: "
 labels: ["bug"]
 body:
@@ -7,12 +7,13 @@ body:
     id: description
     attributes:
       label: What happened?
-      description: Include the GenTree version and a minimal script.
+      description: Please include the GenTree version and the smallest script that shows it.
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
       label: Expected behavior
+      description: What did you expect GenTree to build or return instead?
     validations:
       required: true
