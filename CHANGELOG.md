@@ -6,6 +6,10 @@ This is where I keep the short story of each GenTree release. I follow
 
 ## [Unreleased]
 
+### Fixed
+
+- Reject negative `trunkLean` values before tree generation reaches an invalid random range.
+
 ## [0.1.1] - 2026-07-29
 
 ### Changed

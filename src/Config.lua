@@ -93,6 +93,7 @@ function Config.resolve(options: Options?): Config
 	assertNumber(resolved, "trunkSegments", 1)
 	assertNumber(resolved, "trunkBaseRadius", 0.05)
 	assertNumber(resolved, "trunkTopRadius", 0.05)
+	assertNumber(resolved, "trunkLean", 0)
 	assertNumber(resolved, "branchTiers", 1)
 	assertNumber(resolved, "branchesPerTier", 1)
 	assertNumber(resolved, "branchLength", 0.1)
