@@ -103,6 +103,10 @@ function Config.resolve(options: Options?): Config
 	assertNumber(resolved, "leavesPerCluster", 1)
 	assertNumber(resolved, "leafSpread", 0)
 	assertNumber(resolved, "yieldEveryParts", 0)
+	assert(
+		resolved.leafSize.X > 0 and resolved.leafSize.Y > 0 and resolved.leafSize.Z > 0,
+		"leafSize components must be greater than zero"
+	)
 
 	resolved.trunkSegments = math.floor(resolved.trunkSegments)
 	resolved.branchTiers = math.floor(resolved.branchTiers)
