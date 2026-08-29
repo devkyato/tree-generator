@@ -282,7 +282,8 @@ available as `GenTree.DefaultConfig`.
 | `yieldEveryParts` | `80` | Yield interval; `0` disables yielding |
 
 Colors, materials, collision, and leaf tagging are configurable too. Set
-`tagLeaves = false` if you do not want CollectionService tags.
+Use a non-empty CollectionService tag, or set `tagLeaves = false` if you do not
+want foliage tags.
 
 ## Where each idea lives
 

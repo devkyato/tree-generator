@@ -10,6 +10,7 @@ This is where I keep the short story of each GenTree release. I follow
 
 - Reject negative `trunkLean` values before tree generation reaches an invalid random range.
 - Reject non-positive `leafSize` components before creating invalid Roblox parts.
+- Reject an empty `tagLeaves` value before foliage reaches CollectionService.
 
 ## [0.1.1] - 2026-07-29
 

@@ -104,6 +104,10 @@ function Config.resolve(options: Options?): Config
 	assertNumber(resolved, "leafSpread", 0)
 	assertNumber(resolved, "yieldEveryParts", 0)
 	assert(
+		resolved.tagLeaves == false or #resolved.tagLeaves > 0,
+		"tagLeaves must be false or a non-empty string"
+	)
+	assert(
 		resolved.leafSize.X > 0 and resolved.leafSize.Y > 0 and resolved.leafSize.Z > 0,
 		"leafSize components must be greater than zero"
 	)
